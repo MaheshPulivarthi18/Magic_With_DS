@@ -3,6 +3,7 @@ import os
 import subprocess
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 
 
@@ -26,12 +27,15 @@ def visualize(request):
 
             try:
                 # Run the C++ program with the files as input
+                exe_path = os.path.join(settings.BASE_DIR, 'static', 'executables', 'ago.exe')
+
+# Run the subprocess with the dynamically constructed path
                 result = subprocess.run(
-                    [
-                        "C:\\Users\\MAHESH\\OneDrive\\Desktop\\greedygraph\\django-hello-world\\example\\ago.exe",
-                        banks_file_full_path,
-                        transactions_file_full_path,
-                    ],
+                [
+                    exe_path,
+                    banks_file_full_path,
+                    transactions_file_full_path,
+                ],
                     capture_output=True,
                     text=True,
                     shell=True,
