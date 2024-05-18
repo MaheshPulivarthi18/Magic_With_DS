@@ -28,7 +28,7 @@ def visualize(request):
                 # Run the C++ program with the files as input
                 result = subprocess.run(
                     [
-                        "C:\\Users\\MAHESH\\OneDrive\\Desktop\\greedygraph\\django-hello-world\\example\\static\\ago.exe",
+                        "C:\\Users\\MAHESH\\OneDrive\\Desktop\\greedygraph\\django-hello-world\\example\\ago.exe",
                         banks_file_full_path,
                         transactions_file_full_path,
                     ],
