@@ -1,0 +1,109 @@
+{% load static %}
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Magic with DataStructures</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <style>
+      footer {
+        background-color: rgba(255, 255, 255, 0.5);
+        padding: 10px 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+      }
+
+      footer p {
+        margin: 0;
+        color: black;
+      }
+      #results {
+        background-color: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        padding: 40px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        backdrop-filter: blur(0px);
+        width: 90%;
+        max-width: 500px;
+      }
+      #results:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.921);
+      }
+      #results pre {
+        color: black;
+      }
+    </style>
+    <script src="https://unpkg.com/viz.js@2.1.2/viz.js"></script>
+    <script src="https://unpkg.com/viz.js@2.1.2/full.render.js"></script>
+  </head>
+  <body>
+    <form method="post" enctype="multipart/form-data" id="data-form">
+      {% csrf_token %}
+      <h1 style="color: black; text-align: center">CASH flow minimizer</h1>
+      <div>
+        <label for="banksFile">Upload Banks File:</label>
+        <input
+          type="file"
+          id="banksFile"
+          name="banksFile"
+          accept=".txt"
+          required
+        />
+      </div>
+      <br />
+      <div>
+        <label for="transactionsFile">Upload Transactions File:</label>
+        <input
+          type="file"
+          id="transactionsFile"
+          name="transactionsFile"
+          accept=".txt"
+          required
+        />
+      </div>
+      <br />
+      <button type="submit">Visualize</button>
+    </form>
+    <div id="results" style="display: none">
+      <h2>smart ways</h2>
+      <pre id="output" style="color: black"></pre>
+    </div>
+
+    <script>
+      document
+        .getElementById("data-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent form from submitting the default way
+
+          const formData = new FormData(this);
+
+          fetch('{% url "visualize" %}', {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-CSRFToken": document.querySelector(
+                "[name=csrfmiddlewaretoken]"
+              ).value,
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.error) {
+                alert(data.error);
+              } else {
+                document.getElementById("output").textContent = data.answer;
+                document.getElementById("results").style.display = "block";
+              }
+            })
+            .catch((error) => console.error("Error:", error));
+        });
+    </script>
+    <footer style="text-align: center; margin-top: 20px">
+      <p>&copy; 2024 Magic with DataStructures. All rights reserved.</p>
+    </footer>
+  </body>
+</html>
