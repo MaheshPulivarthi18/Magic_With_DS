@@ -74,33 +74,38 @@
     </div>
 
     <script>
-      document
-        .getElementById("data-form")
-        .addEventListener("submit", function (event) {
-          event.preventDefault(); // Prevent form from submitting the default way
+            document
+              .getElementById("data-form")
+              .addEventListener("submit", function (event) {
+                event.preventDefault(); // Prevent form from submitting the default way
 
-          const formData = new FormData(this);
+                const formData = new FormData(this);
 
-          fetch('{% url "visualize" %}', {
-            method: "POST",
-            body: formData,
-            headers: {
-              "X-CSRFToken": document.querySelector(
-                "[name=csrfmiddlewaretoken]"
-              ).value,
-            },
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.error) {
-                alert(data.error);
-              } else {
-                document.getElementById("output").textContent = data.answer;
-                document.getElementById("results").style.display = "block";
-              }
-            })
-            .catch((error) => console.error("Error:", error));
-        });
+               fetch('/visualize/', {
+          method: 'POST',
+          body: formData,
+          headers: {
+              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+          }
+      })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          return response.json();
+      })
+      .then(data => {
+          if (data.error) {
+              alert(data.error);
+          } else {
+              document.getElementById('output').textContent = data.answer;
+              document.getElementById('results').style.display = 'block';
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while processing your request. Please try again later.');
+      });
     </script>
     <footer style="text-align: center; margin-top: 20px">
       <p>&copy; 2024 Magic with DataStructures. All rights reserved.</p>
