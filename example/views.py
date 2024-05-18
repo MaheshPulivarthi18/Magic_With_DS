@@ -28,16 +28,8 @@ def visualize(request):
             try:
                 # Run the C++ program with the files as input
                 exe_path = os.path.join(
-                    settings.BASE_DIR,'example','static','example','ago.exe'
+                    settings.BASE_DIR, "example", "static", "ago.exe"
                 )
-               
-
-                # Print the BASE_DIR to ensure it's correct
-                print(f"BASE_DIR: {settings.BASE_DIR}")
-
-                # Print the constructed path for debugging purposes
-                print(f"Executable path: {exe_path}")
-
                 # Run the subprocess with the dynamically constructed path
                 result = subprocess.run(
                     [
