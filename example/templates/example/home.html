@@ -74,29 +74,30 @@
     </div>
 
     <script>
-      document
-        .getElementById("data-form")
-        .addEventListener("submit", function (event) {
-          event.preventDefault(); // Prevent form from submitting the default way
+    const visualizeUrl = "{% url 'visualize' %}"; // Render Django URL and store it in a JavaScript variable
 
-          const formData = new FormData(this);
+    document.getElementById("data-form").addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent form from submitting the default way
 
-          fetch('{% url "visualize" %}', {
+        const formData = new FormData(this);
+
+        fetch(visualizeUrl, { // Use the JavaScript variable containing the URL
             method: "POST",
             body: formData
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.error) {
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
                 alert(data.error);
-              } else {
+            } else {
                 document.getElementById("output").textContent = data.answer;
                 document.getElementById("results").style.display = "block";
-              }
-            })
-            .catch((error) => console.error("Error:", error));
-        });
-    </script>
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+</script>
+
     <footer style="text-align: center; margin-top: 20px">
       <p>&copy; 2024 Magic with DataStructures. All rights reserved.</p>
     </footer>
