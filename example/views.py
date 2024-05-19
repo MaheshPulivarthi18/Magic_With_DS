@@ -1,10 +1,10 @@
-# example/views.py
 import os
 import subprocess
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.conf import settings
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import default_storage, FileSystemStorage
+from django.core.files.base import ContentFile
 
 
 def home(request):
@@ -16,30 +16,29 @@ def visualize(request):
         # Process the uploaded files
         banks_file = request.FILES.get("banksFile")
         transactions_file = request.FILES.get("transactionsFile")
-
+         
         if banks_file and transactions_file:
-            # Save the files temporarily
-            fs = FileSystemStorage()
-            banks_file_path = fs.save(banks_file.name, banks_file)
-            transactions_file_path = fs.save(transactions_file.name, transactions_file)
-            banks_file_full_path = fs.path(banks_file_path)
-            transactions_file_full_path = fs.path(transactions_file_path)
-
             try:
+                # Save the files temporarily using default_storage
+                banks_file_path = default_storage.save(
+                    banks_file.name, ContentFile(banks_file.read())
+                )
+                transactions_file_path = default_storage.save(
+                    transactions_file.name, ContentFile(transactions_file.read())
+                )
+                banks_file_full_path = default_storage.path(banks_file_path)
+                transactions_file_full_path = default_storage.path(
+                    transactions_file_path
+                )
+
                 # Run the C++ program with the files as input
                 exe_path = os.path.join(
                     settings.BASE_DIR, "example", "static", "ago.exe"
                 )
-                # Run the subprocess with the dynamically constructed path
                 result = subprocess.run(
-                    [
-                        exe_path,
-                        banks_file_full_path,
-                        transactions_file_full_path,
-                    ],
+                    [exe_path, banks_file_full_path, transactions_file_full_path],
                     capture_output=True,
                     text=True,
-                    shell=True,
                 )
 
                 # Check if the C++ program ran successfully
@@ -53,8 +52,8 @@ def visualize(request):
 
             finally:
                 # Clean up the temporary files
-                os.remove(banks_file_full_path)
-                os.remove(transactions_file_full_path)
+                default_storage.delete(banks_file_path)
+                default_storage.delete(transactions_file_path)
         else:
             return JsonResponse({"error": "Files are required"}, status=400)
     else:
