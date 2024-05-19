@@ -8,7 +8,7 @@ import os
 urlpatterns = [
     path("", views.home),
     path("visualize/", views.visualize, name="visualize"),
-    path("favicon.png", views.favicon),
+    path("favicon.ico", views.favicon),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
