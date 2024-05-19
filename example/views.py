@@ -1,7 +1,7 @@
 import os
 import subprocess
 import logging
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
 from django.shortcuts import render
 from django.conf import settings
 
@@ -75,3 +75,7 @@ def visualize(request):
 
     else:
         return render(request, "example/home.html")
+
+
+def favicon(request):
+    return HttpResponse(status=204)
