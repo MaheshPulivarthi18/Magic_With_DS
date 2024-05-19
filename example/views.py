@@ -17,6 +17,7 @@ def visualize(request):
         # Process the uploaded files
         banks_file = request.FILES.get("banksFile")
         transactions_file = request.FILES.get("transactionsFile")
+        banks_file_tmp_path = None  # Initialize the variable here
 
         if banks_file and transactions_file:
             try:
@@ -61,7 +62,7 @@ def visualize(request):
 
             finally:
                 # Clean up the temporary files
-                if os.path.exists(banks_file_tmp_path):
+                if banks_file_tmp_path and os.path.exists(banks_file_tmp_path):
                     os.remove(banks_file_tmp_path)
                 if os.path.exists(transactions_file_tmp_path):
                     os.remove(transactions_file_tmp_path)
@@ -69,9 +70,3 @@ def visualize(request):
             return JsonResponse({"error": "Files are required"}, status=400)
     else:
         return render(request, "example/home.html")
-
-from django.http import HttpResponse
-
-
-def favicon(request):
-    return HttpResponse(status=204)
