@@ -4,7 +4,6 @@ import logging
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.conf import settings
-from django.core.files.storage import default_storage
 
 logger = logging.getLogger(__name__)
 
@@ -21,19 +20,17 @@ def visualize(request):
 
         if banks_file and transactions_file:
             try:
-                # Define the paths to the static files
-                banks_file_static_path = os.path.join(
-                    settings.BASE_DIR, "example", "static", "banksFile.txt"
-                )
-                transactions_file_static_path = os.path.join(
-                    settings.BASE_DIR, "example", "static", "transactionsFile.txt"
+                # Define the paths to the temporary files in %TEMP%
+                banks_file_tmp_path = os.path.join(os.environ["TEMP"], "banksFile.txt")
+                transactions_file_tmp_path = os.path.join(
+                    os.environ["TEMP"], "transactionsFile.txt"
                 )
 
-                # Write the uploaded content to the static files
-                with open(banks_file_static_path, "wb") as f:
+                # Write the uploaded content to the temporary files
+                with open(banks_file_tmp_path, "wb") as f:
                     for chunk in banks_file.chunks():
                         f.write(chunk)
-                with open(transactions_file_static_path, "wb") as f:
+                with open(transactions_file_tmp_path, "wb") as f:
                     for chunk in transactions_file.chunks():
                         f.write(chunk)
 
@@ -42,9 +39,9 @@ def visualize(request):
                     settings.BASE_DIR, "example", "static", "ago.exe"
                 )
 
-                # Run the C++ program with the static files as input
+                # Run the C++ program with the temporary files as input
                 result = subprocess.run(
-                    [exe_path, banks_file_static_path, transactions_file_static_path],
+                    [exe_path, banks_file_tmp_path, transactions_file_tmp_path],
                     capture_output=True,
                     text=True,
                     shell=True,
@@ -62,7 +59,19 @@ def visualize(request):
                 logger.error(f"Error processing files: {e}")
                 return JsonResponse({"error": "Internal server error"}, status=500)
 
+            finally:
+                # Clean up the temporary files
+                if os.path.exists(banks_file_tmp_path):
+                    os.remove(banks_file_tmp_path)
+                if os.path.exists(transactions_file_tmp_path):
+                    os.remove(transactions_file_tmp_path)
         else:
             return JsonResponse({"error": "Files are required"}, status=400)
     else:
         return render(request, "example/home.html")
+
+from django.http import HttpResponse
+
+
+def favicon(request):
+    return HttpResponse(status=204)
