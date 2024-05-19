@@ -1,7 +1,7 @@
 import os
 import subprocess
 import logging
-from django.http import JsonResponse,HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.conf import settings
 
@@ -17,32 +17,39 @@ def visualize(request):
         # Process the uploaded files
         banks_file = request.FILES.get("banksFile")
         transactions_file = request.FILES.get("transactionsFile")
-        banks_file_tmp_path = None  # Initialize the variable here
-        transactions_file_tmp_path=None
+
         if banks_file and transactions_file:
             try:
-                # Define the paths to the temporary files in %TEMP%
-                banks_file_tmp_path = os.path.join(os.environ["TEMP"], "banksFile.txt")
-                transactions_file_tmp_path = os.path.join(
-                    os.environ["TEMP"], "transactionsFile.txt"
+                # Define the paths to the temporary files in the static directory
+                banks_file_path = os.path.join(
+                    settings.BASE_DIR, "example", "static", "bankFile.txt"
+                )
+                transactions_file_path = os.path.join(
+                    settings.BASE_DIR, "example", "static", "transactionsFile.txt"
                 )
 
-                # Write the uploaded content to the temporary files
-                with open(banks_file_tmp_path, "wb") as f:
+                # Set file permissions to allow writing
+                os.chmod(banks_file_path, 0o666)
+                os.chmod(transactions_file_path, 0o666)
+
+                # Write the uploaded content to the static files
+                with open(banks_file_path, "wb") as f:
                     for chunk in banks_file.chunks():
                         f.write(chunk)
-                with open(transactions_file_tmp_path, "wb") as f:
+
+                with open(transactions_file_path, "wb") as f:
                     for chunk in transactions_file.chunks():
                         f.write(chunk)
 
-                # Construct the path to the executable
+                # Set file permissions to make ago.exe executable
                 exe_path = os.path.join(
                     settings.BASE_DIR, "example", "static", "ago.exe"
                 )
+                os.chmod(exe_path, 0o755)
 
-                # Run the C++ program with the temporary files as input
+                # Run the C++ program with the static files as input
                 result = subprocess.run(
-                    [exe_path, banks_file_tmp_path, transactions_file_tmp_path],
+                    [exe_path, banks_file_path, transactions_file_path],
                     capture_output=True,
                     text=True,
                     shell=True,
@@ -60,17 +67,11 @@ def visualize(request):
                 logger.error(f"Error processing files: {e}")
                 return JsonResponse({"error": "Internal server error"}, status=500)
 
-            finally:
-                # Clean up the temporary files
-                if banks_file_tmp_path and os.path.exists(banks_file_tmp_path):
-                    os.remove(banks_file_tmp_path)
-                if os.path.exists(transactions_file_tmp_path):
-                    os.remove(transactions_file_tmp_path)
         else:
-            return JsonResponse({"error": "Files are required"}, status=400)
+            return JsonResponse(
+                {"error": "Both banks file and transactions file are required"},
+                status=400,
+            )
+
     else:
         return render(request, "example/home.html")
-
-
-def favicon(request):
-    return HttpResponse(status=204)
