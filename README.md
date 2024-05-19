@@ -104,3 +104,33 @@ Your Django application is now available at `http://localhost:8000`.
 Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=vercel-examples):
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fexamples%2Ftree%2Fmain%2Fpython%2Fdjango&demo-title=Django%20%2B%20Vercel&demo-description=Use%20Django%204%20on%20Vercel%20with%20Serverless%20Functions%20using%20the%20Python%20Runtime.&demo-url=https%3A%2F%2Fdjango-template.vercel.app%2F&demo-image=https://assets.vercel.com/image/upload/v1669994241/random/django.png)
+
+## txt files will be as in this format
+2.txt\
+9-no of transactions\
+debt cred amt\
+G B 30\
+G D 10\
+F B 10\
+F C 30\
+F D 10\
+F E 10\
+B C 40\
+C D 20\
+D E 50\
+1.txt\
+6-no of banks\
+bank-noof payment modes-type of modeo of payment\
+B 3 1 2 3\
+C 2 1 2\
+D 1 2\
+E 2 1 3\
+F 1 3\
+G 2 2 3
+
+
+## working
+<img width="944" alt="image" src="https://github.com/MaheshPulivarthi18/django-hello-world/assets/134507390/7f6ea2e8-3ca0-4538-81ea-7644dea9b570">
+
+
+ui with very attractive hover effects and glass card effects
