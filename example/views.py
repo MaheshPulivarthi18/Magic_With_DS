@@ -1,7 +1,7 @@
 import os
 import subprocess
 import logging
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
 from django.shortcuts import render
 from django.conf import settings
 
@@ -18,7 +18,7 @@ def visualize(request):
         banks_file = request.FILES.get("banksFile")
         transactions_file = request.FILES.get("transactionsFile")
         banks_file_tmp_path = None  # Initialize the variable here
-
+        transactions_file_tmp_path=None
         if banks_file and transactions_file:
             try:
                 # Define the paths to the temporary files in %TEMP%
@@ -70,3 +70,7 @@ def visualize(request):
             return JsonResponse({"error": "Files are required"}, status=400)
     else:
         return render(request, "example/home.html")
+
+
+def favicon(request):
+    return HttpResponse(status=204)
