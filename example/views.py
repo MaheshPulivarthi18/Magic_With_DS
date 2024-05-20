@@ -22,10 +22,10 @@ def visualize(request):
             try:
                 # Define the paths to the temporary files in the static directory
                 banks_file_path = os.path.join(
-                    settings.BASE_DIR, "example", "static", "bankFile.txt"
+                    settings.STATIC_ROOT, "example", "static", "bankFile.txt"
                 )
                 transactions_file_path = os.path.join(
-                    settings.BASE_DIR, "example", "static", "transactionsFile.txt"
+                    settings.STATIC_ROOT, "example", "static", "transactionsFile.txt"
                 )
 
                 # Set file permissions to allow writing
