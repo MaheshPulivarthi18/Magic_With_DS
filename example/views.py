@@ -18,7 +18,7 @@ def visualize(request):
         transactions_file_path = (
             request.POST.get("transactionsFilePath", "").strip().strip('"')
         )
-
+        
         logger.debug(f"Received banksFilePath: {banks_file_path}")
         logger.debug(f"Received transactionsFilePath: {transactions_file_path}")
 
