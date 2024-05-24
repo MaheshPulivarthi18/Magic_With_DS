@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.8" />
     <title>Magic with DataStructures</title>
     <link rel="stylesheet" href="{% static 'example/css/style.css' %}" />
     <style>
@@ -44,16 +44,32 @@
     <form method="post" enctype="multipart/form-data" id="data-form">
       {% csrf_token %}
       <h1 style="color: black; text-align: center">CASH flow minimizer</h1>
-      <div>
-        <label for="banksFilePath">Banks File Path:</label>
-        <input type="text" id="banksFilePath" name="banksFilePath" required>
-        <br>
+      <div id="input123" style="width: 500px">
+        <label for="banksFilePath" style="color: black"
+          ><strong>Banks File Path:</strong></label
+        >
+        <input
+          style="width: 500px; height: 30px; border-radius: 5px"
+          type="text"
+          id="banksFilePath"
+          name="banksFilePath"
+          required
+        />
+        <br />
       </div>
-      <br>
-      <div>
-        <label for="transactionsFilePath">Transactions File Path:</label>
-        <input type="text" id="transactionsFilePath" name="transactionsFilePath" required>
-        <br>
+      <br />
+      <div id="input12" style="width: 500px">
+        <label for="transactionsFilePath" style="color: black"
+          ><strong>Transactions File Path:</strong></label
+        >
+        <input
+          style="width: 500px; height: 30px; border-radius: 5px"
+          type="text"
+          id="transactionsFilePath"
+          name="transactionsFilePath"
+          required
+        />
+        <br />
       </div>
       <br />
       <button type="submit">Visualize</button>
@@ -64,32 +80,40 @@
     </div>
 
     <script>
-    const visualizeUrl = "{% url 'visualize' %}"; // Render Django URL and store it in a JavaScript variable
+      const visualizeUrl = "{% url 'visualize' %}";
 
-    document.getElementById("data-form").addEventListener("submit", function (event) {
-        event.preventDefault(); // Prevent form from submitting the default way
+      document
+        .getElementById("data-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent form from submitting the default way
 
-        const formData = new FormData(this);
+          const formData = new FormData(this);
 
-        fetch(visualizeUrl, { // Use the JavaScript variable containing the URL
+          fetch(visualizeUrl, {
+            // Use the JavaScript variable containing the URL
             method: "POST",
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.error) {
                 alert(data.error);
-            } else {
+              } else {
                 document.getElementById("output").textContent = data.answer;
                 document.getElementById("results").style.display = "block";
-            }
-        })
-        .catch(error => console.error("Error:", error));
-    });
-</script>
+              }
+            })
+            .catch((error) => console.error("Error:", error));
+        });
+    </script>
 
     <footer style="text-align: center; margin-top: 20px">
       <p>&copy; 2024 Magic with DataStructures. All rights reserved.</p>
+      <a
+        href="https://github.com/MaheshPulivarthi18/django-hello-world"
+        target="blank"
+        >For MOre</a
+      >
     </footer>
   </body>
 </html>

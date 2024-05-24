@@ -5,7 +5,6 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.conf import settings
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -15,21 +14,26 @@ def home(request):
 
 def visualize(request):
     if request.method == "POST":
-        # Get file paths from the POST request
-        banks_file_path = request.POST.get("banksFilePath")
-        transactions_file_path = request.POST.get("transactionsFilePath")
+        banks_file_path = request.POST.get("banksFilePath", "").strip().strip('"')
+        transactions_file_path = (
+            request.POST.get("transactionsFilePath", "").strip().strip('"')
+        )
+
+        logger.debug(f"Received banksFilePath: {banks_file_path}")
+        logger.debug(f"Received transactionsFilePath: {transactions_file_path}")
 
         if banks_file_path and transactions_file_path:
             try:
-                # Ensure the files exist
+                # Ensure the paths are valid
                 if not os.path.exists(banks_file_path) or not os.path.exists(
                     transactions_file_path
                 ):
+                    logger.warning("One or both files do not exist.")
                     return JsonResponse(
                         {"error": "One or both files do not exist"}, status=400
                     )
 
-                # Set file permissions to make ago.exe executable
+                # Set the executable path
                 exe_path = os.path.join(
                     settings.BASE_DIR, "example", "static", "ago.exe"
                 )
@@ -56,6 +60,9 @@ def visualize(request):
                 return JsonResponse({"error": "Internal server error"}, status=500)
 
         else:
+            logger.warning(
+                "Both banks file path and transactions file path are required."
+            )
             return JsonResponse(
                 {
                     "error": "Both banks file path and transactions file path are required"
