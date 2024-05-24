@@ -1,9 +1,10 @@
 import os
 import subprocess
 import logging
-from django.http import JsonResponse,HttpResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -14,32 +15,19 @@ def home(request):
 
 def visualize(request):
     if request.method == "POST":
-        # Process the uploaded files
-        banks_file = request.FILES.get("banksFile")
-        transactions_file = request.FILES.get("transactionsFile")
+        # Get file paths from the POST request
+        banks_file_path = request.POST.get("banksFilePath")
+        transactions_file_path = request.POST.get("transactionsFilePath")
 
-        if banks_file and transactions_file:
+        if banks_file_path and transactions_file_path:
             try:
-                # Define the paths to the temporary files in the static directory
-                banks_file_path = os.path.join(
-                    settings.BASE_DIR, "example","bankFile.txt"
-                )
-                transactions_file_path = os.path.join(
-                    settings.BASE_DIR, "example","transactionsFile.txt"
-                )
-
-                # Set file permissions to allow writing
-                os.chmod(banks_file_path, 0o666)
-                os.chmod(transactions_file_path, 0o666)
-
-                # Write the uploaded content to the static files
-                with open(banks_file_path, "wb") as f:
-                    for chunk in banks_file.chunks():
-                        f.write(chunk)
-
-                with open(transactions_file_path, "wb") as f:
-                    for chunk in transactions_file.chunks():
-                        f.write(chunk)
+                # Ensure the files exist
+                if not os.path.exists(banks_file_path) or not os.path.exists(
+                    transactions_file_path
+                ):
+                    return JsonResponse(
+                        {"error": "One or both files do not exist"}, status=400
+                    )
 
                 # Set file permissions to make ago.exe executable
                 exe_path = os.path.join(
@@ -47,7 +35,7 @@ def visualize(request):
                 )
                 os.chmod(exe_path, 0o755)
 
-                # Run the C++ program with the static files as input
+                # Run the C++ program with the provided file paths as input
                 result = subprocess.run(
                     [exe_path, banks_file_path, transactions_file_path],
                     capture_output=True,
@@ -69,7 +57,9 @@ def visualize(request):
 
         else:
             return JsonResponse(
-                {"error": "Both banks file and transactions file are required"},
+                {
+                    "error": "Both banks file path and transactions file path are required"
+                },
                 status=400,
             )
 
